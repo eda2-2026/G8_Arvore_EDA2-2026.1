@@ -1,27 +1,116 @@
-# G8_Arvore_EDA2-2026.1
+# Gerenciador de Contatos — BST vs AVL
 
-Número da Lista: X<br>
-Conteúdo da Disciplina: XXXXXXXXXX<br>
+Número da Lista: Trabalho 3<br>
+Conteúdo da Disciplina: Árvores<br>
+
 
 ## Alunos
-|Matrícula | Aluno |
+| Matrícula | Aluno |
 | -- | -- |
-| xx/xxxxxx  |  xxxx xxxx xxxxx |
-| xx/xxxxxx  |  xxxx xxxx xxxxx |
+| 231026385 | Igor Veras Daniel |
+| 231026483 | Maria Eduarda de Amorim Galdino |
 
-## Sobre 
-Descreva os objetivos do seu projeto e como ele funciona. 
+
+## Link do Vídeo 
+
+
+## Sobre
+
+Gerenciador de contatos em linha de comando que implementa e compara
+duas estruturas de dados: uma **Árvore Binária de Busca simples (BST)**
+e uma **Árvore AVL (balanceada)**. Ambas armazenam os mesmos contatos
+(nome + telefone) e todas as operações — inserção, remoção e busca —
+são executadas nas duas árvores simultaneamente.
+
+O projeto possui um **modo benchmark** dedicado, que insere sequências
+de contatos ordenadas e aleatórias nas duas estruturas, mede o tempo de
+cada operação e exibe uma tabela comparativa com barras ASCII e as
+árvores desenhadas lado a lado — tornando visível como o
+rebalanceamento automático da AVL a mantém sempre mais compacta e
+eficiente que a BST, especialmente no pior caso (inserção em ordem
+alfabética, que degenera a BST numa lista encadeada).
+
+
 
 ## Screenshots
-Adicione 3 ou mais screenshots do projeto em funcionamento.
 
-## Instalação 
-Linguagem: xxxxxx<br>
-Framework: (caso exista)<br>
-Descreva os pré-requisitos para rodar o seu projeto e os comandos necessários.
+<!-- A serem adicionados -->
 
-## Uso 
-Explique como usar seu projeto caso haja algum passo a passo após o comando de execução.
 
-## Outros 
-Quaisquer outras informações sobre seu projeto podem ser descritas abaixo.
+
+## Instalação
+
+Linguagem: Python 3.10+<br>
+Framework: Nenhum (apenas biblioteca padrão)<br>
+
+```bash
+git clone https://github.com/seu-usuario/avl-contatos.git
+cd avl-contatos
+python main.py
+```
+
+
+## Uso
+
+Ao executar, o menu principal é exibido:
+
+```
+========================================
+  GERENCIADOR DE CONTATOS — BST vs AVL
+========================================
+
+[1] Inserir contato
+[2] Remover contato
+[3] Buscar contato
+[4] Listar em ordem
+[5] Benchmark BST vs AVL
+[6] Sair
+```
+
+As opções 1 a 4 funcionam como um gerenciador normal — após cada
+inserção ou remoção as duas árvores são desenhadas em ASCII para
+comparação visual imediata.
+
+A opção **[5] Benchmark** é onde a diferença fica mais evidente.
+Dois cenários são executados automaticamente:
+
+```
+==================================================
+       BENCHMARK — BST vs AVL
+==================================================
+
+>>> CENÁRIO 1: Inserção em ordem alfabética (pior caso BST)
+
+┌─────────────────────────────────────────┐
+│  Inserção ordenada                      │
+├──────────┬──────────────┬───────────────┤
+│          │    BST       │      AVL      │
+├──────────┼──────────────┼───────────────┤
+│ Tempo    │ 0.000412s    │  0.000089s    │
+│ Altura   │ 9            │  3            │
+│ Gráfico  │ ████████████ │  ███          │
+└──────────┴──────────────┴───────────────┘
+
+>>> CENÁRIO 2: Inserção em ordem aleatória (caso médio)
+...
+```
+
+---
+
+## Outros
+
+Estrutura de arquivos:
+
+```
+avl-contatos/
+├── main.py        # ponto de entrada
+├── bst.py         # Pessoa 1 — BST simples
+├── avl.py         # Pessoa 1 — AVL com rotações
+├── interface.py   # Pessoa 2 — menu e visualização ASCII
+├── benchmark.py   # Pessoa 2 — cenários de comparação BST vs AVL
+└── README.md
+```
+
+A chave de ordenação é o **nome** do contato em ordem alfabética.
+O benchmark usa listas fixas de 10 contatos para garantir
+reprodutibilidade, mas pode ser facilmente expandido.
