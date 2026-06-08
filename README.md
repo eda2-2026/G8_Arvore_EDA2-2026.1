@@ -44,9 +44,9 @@ Linguagem: Python 3.10+<br>
 Framework: Nenhum (apenas biblioteca padrão)<br>
 
 ```bash
-git clone https://github.com/seu-usuario/avl-contatos.git
-cd avl-contatos
-python main.py
+git clone https://github.com/eda2-2026/G8_Arvore_EDA2-2026.1.git
+cd app
+python3 main.py
 ```
 
 
