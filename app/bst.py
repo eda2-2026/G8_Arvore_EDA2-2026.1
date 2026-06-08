@@ -1,5 +1,5 @@
 # bst.py - Pessoa 1
-# Árvore Binária de Busca simples (sem balanceamento).
+# Árvore Binária de Busca.
 #
 # Design: cada nó guarda apenas nome + telefone; as operações de
 # inserção/remoção/busca trocam *ponteiros para nós*, nunca copiam
@@ -50,14 +50,9 @@ class BST:
         self.raiz = self._remover(self.raiz, nome)
 
     def _remover(self, node, nome):
-        """Remove o nó de chave `nome` e devolve o ponteiro correto para
-        o pai recompor a ligação.  Três casos clássicos:
-          • folha  → devolve None
-          • 1 filho → devolve o filho (o nó é 'bypassado')
-          • 2 filhos → copia dados do sucessor in-order para o nó atual
-                       e remove o sucessor na subárvore direita."""
+
         if node is None:
-            return None                           # chave não encontrada
+            return None                           
         if nome < node.nome:
             node.esq = self._remover(node.esq, nome)
         elif nome > node.nome:
@@ -65,12 +60,10 @@ class BST:
         else:
             # Nó encontrado — três casos
             if node.esq is None:
-                return node.dir                   # caso 0/1 filho (dir)
+                return node.dir                   
             if node.dir is None:
-                return node.esq                   # caso 1 filho (esq)
-            # Caso 2 filhos: substitui pelo sucessor in-order (mínimo da dir)
+                return node.esq                   
             sucessor = self._minimo(node.dir)
-            # Copia apenas os dados; o ponteiro `node` permanece no lugar
             node.nome = sucessor.nome
             node.telefone = sucessor.telefone
             # Remove o sucessor da subárvore direita
@@ -78,8 +71,6 @@ class BST:
         return node
 
     def _minimo(self, node):
-        """Desce sempre à esquerda até encontrar o nó mínimo.
-        Retorna o ponteiro para esse nó (não copia dados)."""
         while node.esq is not None:
             node = node.esq
         return node
