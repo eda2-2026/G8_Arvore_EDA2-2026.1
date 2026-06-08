@@ -1,6 +1,9 @@
 # avl.py - Pessoa 1
-# Árvore AVL (balanceada). Herda a lógica base da BST e adiciona
-# cálculo de fator de balanceamento + rotações.
+# Árvore AVL (auto-balanceada). Mesma interface da BST; acrescenta
+# campo `altura` em cada nó e rotações para manter |FB| ≤ 1.
+#
+# Design de ponteiros: igual à BST — as rotações apenas *remapeiam
+# ponteiros* entre nós existentes, nunca criam cópias dos dados.
 
 class NodeAVL:
     def __init__(self, nome, telefone):
@@ -8,7 +11,7 @@ class NodeAVL:
         self.telefone = telefone
         self.esq = None
         self.dir = None
-        self.altura = 0
+        self.altura = 0          # folha começa em 0
 
 
 class AVL:
@@ -16,87 +19,219 @@ class AVL:
         self.raiz = None
 
     # ------------------------------------------------------------------ #
-    #  Utilitários                                                         #
+    #  Utilitários de altura e fator de balanceamento                     #
     # ------------------------------------------------------------------ #
 
     def _altura(self, node):
-        # TODO Pessoa 1: retorna node.altura ou -1 se None
-        pass
+        """Retorna node.altura (inteiro ≥ 0) ou -1 para None.
+        Leitura de campo O(1) — a altura é mantida atualizada em cache."""
+        if node is None:
+            return -1
+        return node.altura
 
     def _atualizar_altura(self, node):
-        # TODO Pessoa 1: recalcula node.altura com base nos filhos
-        pass
+        """Recalcula e armazena a altura de `node` a partir dos filhos.
+        Chamado após qualquer modificação estrutural no nó."""
+        node.altura = 1 + max(self._altura(node.esq), self._altura(node.dir))
 
     def _fb(self, node):
-        # TODO Pessoa 1: fator de balanceamento = altura(dir) - altura(esq)
-        pass
+        """Fator de Balanceamento = altura(dir) − altura(esq).
+        • FB > +1 → subárvore direita muito alta → rotação à esquerda
+        • FB < −1 → subárvore esquerda muito alta → rotação à direita"""
+        if node is None:
+            return 0
+        return self._altura(node.dir) - self._altura(node.esq)
 
     # ------------------------------------------------------------------ #
-    #  Rotações                                                            #
+    #  Rotações — apenas remapeiam ponteiros, O(1)                        #
     # ------------------------------------------------------------------ #
 
     def _rot_esq(self, p):
-        # TODO Pessoa 1: rotação simples à esquerda; retorna nova raiz
-        pass
+        """Rotação simples à esquerda (caso Direita-Direita).
+        Retorna o novo nó raiz da subárvore (antigo filho direito de p).
+
+              p                  q
+             / \\               / \\
+            A   q     →       p   C
+               / \\           / \\
+              B   C         A   B
+        """
+        q = p.dir                  # q sobe
+        p.dir = q.esq              # B migra para filho direito de p
+        q.esq = p                  # p desce como filho esquerdo de q
+        # ordem importa: atualizar p antes de q
+        self._atualizar_altura(p)
+        self._atualizar_altura(q)
+        return q                   # devolve novo ponteiro para o pai
 
     def _rot_dir(self, p):
-        # TODO Pessoa 1: rotação simples à direita; retorna nova raiz
-        pass
+        """Rotação simples à direita (caso Esquerda-Esquerda).
+        Retorna o novo nó raiz da subárvore (antigo filho esquerdo de p).
+
+              p                q
+             / \\             / \\
+            q   C    →      A   p
+           / \\                 / \\
+          A   B               B   C
+        """
+        q = p.esq                  # q sobe
+        p.esq = q.dir              # B migra para filho esquerdo de p
+        q.dir = p                  # p desce como filho direito de q
+        self._atualizar_altura(p)
+        self._atualizar_altura(q)
+        return q
 
     def _rot_dir_esq(self, p):
-        # TODO Pessoa 1: rotação dupla direita-esquerda; retorna nova raiz
-        pass
+        """Rotação dupla Direita-Esquerda (caso Direita-Esquerda).
+        Primeiro rotaciona o filho direito à direita, depois p à esquerda.
+
+              p                 p                  r
+             / \\              / \\               /   \\
+            A   q    →       A   r     →        p     q
+               / \\               \\            / \\   / \\
+              r   C               q           A   B2 B3  C
+             / \\                / \\
+            B2  B3             B3   C
+        """
+        p.dir = self._rot_dir(p.dir)
+        return self._rot_esq(p)
 
     def _rot_esq_dir(self, p):
-        # TODO Pessoa 1: rotação dupla esquerda-direita; retorna nova raiz
-        pass
+        """Rotação dupla Esquerda-Direita (caso Esquerda-Direita).
+        Primeiro rotaciona o filho esquerdo à esquerda, depois p à direita.
+
+              p                 p                  r
+             / \\              / \\               /   \\
+            q   C    →       r   C     →        q     p
+           / \\             / \\               / \\   / \\
+          A   r            q   B3            A  B2 B3   C
+             / \\          / \\
+            B2  B3        A   B2
+        """
+        p.esq = self._rot_esq(p.esq)
+        return self._rot_dir(p)
 
     # ------------------------------------------------------------------ #
     #  Rebalanceamento                                                     #
     # ------------------------------------------------------------------ #
 
     def _balancear(self, node):
-        # TODO Pessoa 1: verifica FB e aplica a rotação correta (casos 1 e 2)
-        pass
+        """Verifica o FB do nó e aplica a rotação adequada (se necessário).
+        Retorna o ponteiro correto para o pai (pode ser um nó diferente
+        após rotação).
+
+        Casos:
+          FB = +2, FB(dir) ≥ 0  → rotação simples esquerda  (DD)
+          FB = +2, FB(dir) < 0  → rotação dupla  dir-esq    (DE)
+          FB = −2, FB(esq) ≤ 0  → rotação simples direita   (EE)
+          FB = −2, FB(esq) > 0  → rotação dupla  esq-dir    (ED)
+        """
+        self._atualizar_altura(node)
+        fb = self._fb(node)
+
+        if fb == 2:                              # subárvore direita pesada
+            if self._fb(node.dir) >= 0:
+                return self._rot_esq(node)       # DD
+            else:
+                return self._rot_dir_esq(node)   # DE
+
+        if fb == -2:                             # subárvore esquerda pesada
+            if self._fb(node.esq) <= 0:
+                return self._rot_dir(node)       # EE
+            else:
+                return self._rot_esq_dir(node)   # ED
+
+        return node                              # já balanceado
 
     # ------------------------------------------------------------------ #
-    #  Operações públicas                                                  #
+    #  Inserção                                                            #
     # ------------------------------------------------------------------ #
 
     def inserir(self, nome, telefone):
-        # TODO Pessoa 1: chama _inserir e atualiza self.raiz
-        pass
+        """Ponto de entrada público."""
+        self.raiz = self._inserir(self.raiz, nome, telefone)
 
     def _inserir(self, node, nome, telefone):
-        # TODO Pessoa 1: insere recursivamente e rebalanceia no retorno
-        pass
+        """Insere recursivamente e rebalanceia no retorno (bottom-up).
+        Retorna o ponteiro correto para o pai (pode mudar após rotação)."""
+        if node is None:
+            return NodeAVL(nome, telefone)        # novo nó; altura = 0
+        if nome < node.nome:
+            node.esq = self._inserir(node.esq, nome, telefone)
+        elif nome > node.nome:
+            node.dir = self._inserir(node.dir, nome, telefone)
+        else:
+            node.telefone = telefone              # atualiza sem criar nó
+            return node                           # altura não muda
+        return self._balancear(node)              # rebalanceia na volta
+
+    # ------------------------------------------------------------------ #
+    #  Remoção                                                             #
+    # ------------------------------------------------------------------ #
 
     def remover(self, nome):
-        # TODO Pessoa 1: chama _remover e atualiza self.raiz
-        pass
+        """Ponto de entrada público."""
+        self.raiz = self._remover(self.raiz, nome)
 
     def _remover(self, node, nome):
-        # TODO Pessoa 1: remove recursivamente e rebalanceia no retorno
-        pass
+        """Remove recursivamente e rebalanceia na volta (bottom-up).
+        Mesma lógica da BST; ao retornar, passa por _balancear."""
+        if node is None:
+            return None
+        if nome < node.nome:
+            node.esq = self._remover(node.esq, nome)
+        elif nome > node.nome:
+            node.dir = self._remover(node.dir, nome)
+        else:
+            if node.esq is None:
+                return node.dir
+            if node.dir is None:
+                return node.esq
+            # 2 filhos: substitui pelo sucessor in-order
+            sucessor = self._minimo(node.dir)
+            node.nome = sucessor.nome
+            node.telefone = sucessor.telefone
+            node.dir = self._remover(node.dir, sucessor.nome)
+        return self._balancear(node)              # rebalanceia na volta
 
     def _minimo(self, node):
-        # TODO Pessoa 1: retorna o nó com menor chave (usado na remoção)
-        pass
+        """Retorna ponteiro para o nó mínimo da subárvore (sem copiar dados)."""
+        while node.esq is not None:
+            node = node.esq
+        return node
+
+    # ------------------------------------------------------------------ #
+    #  Busca                                                               #
+    # ------------------------------------------------------------------ #
 
     def buscar(self, nome):
-        # TODO Pessoa 1: retorna NodeAVL com o nome dado, ou None
-        pass
+        """Retorna o ponteiro para o NodeAVL encontrado, ou None."""
+        return self._buscar(self.raiz, nome)
 
     def _buscar(self, node, nome):
-        # TODO Pessoa 1: helper recursivo de busca
-        pass
+        """Busca binária recursiva idêntica à BST — AVL não muda a busca."""
+        if node is None:
+            return None
+        if nome < node.nome:
+            return self._buscar(node.esq, nome)
+        if nome > node.nome:
+            return self._buscar(node.dir, nome)
+        return node                               # ponteiro para o nó achado
+
+    # ------------------------------------------------------------------ #
+    #  Percurso em ordem                                                   #
+    # ------------------------------------------------------------------ #
 
     def em_ordem(self):
-        # TODO Pessoa 1: retorna lista de (nome, telefone) em ordem alfabética
+        """Retorna lista de (nome, telefone) em ordem alfabética crescente."""
         resultado = []
         self._em_ordem(self.raiz, resultado)
         return resultado
 
     def _em_ordem(self, node, resultado):
-        # TODO Pessoa 1: helper recursivo do percurso em ordem
-        pass
+        """Percurso in-order acumula pares (nome, telefone) na lista."""
+        if node is None:
+            return
+        self._em_ordem(node.esq, resultado)
+        resultado.append((node.nome, node.telefone))
+        self._em_ordem(node.dir, resultado)
