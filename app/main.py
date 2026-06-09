@@ -1,6 +1,3 @@
-# main.py - Pessoa 2
-# Ponto de entrada do programa.
-
 from bst import BST
 from avl import AVL
 from interface import menu

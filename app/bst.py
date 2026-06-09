@@ -1,4 +1,3 @@
-# bst.py - Pessoa 1
 # Árvore Binária de Busca.
 #
 # Design: cada nó guarda apenas nome + telefone; as operações de

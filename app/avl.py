@@ -1,4 +1,3 @@
-# avl.py - Pessoa 1
 # Árvore AVL (auto-balanceada). Mesma interface da BST; acrescenta
 # campo `altura` em cada nó e rotações para manter |FB| ≤ 1.
 #
@@ -47,15 +46,6 @@ class AVL:
     # ------------------------------------------------------------------ #
 
     def _rot_esq(self, p):
-        """Rotação simples à esquerda (caso Direita-Direita).
-        Retorna o novo nó raiz da subárvore (antigo filho direito de p).
-
-              p                  q
-             / \\               / \\
-            A   q     →       p   C
-               / \\           / \\
-              B   C         A   B
-        """
         q = p.dir                  # q sobe
         p.dir = q.esq              # B migra para filho direito de p
         q.esq = p                  # p desce como filho esquerdo de q
@@ -65,15 +55,6 @@ class AVL:
         return q                   # devolve novo ponteiro para o pai
 
     def _rot_dir(self, p):
-        """Rotação simples à direita (caso Esquerda-Esquerda).
-        Retorna o novo nó raiz da subárvore (antigo filho esquerdo de p).
-
-              p                q
-             / \\             / \\
-            q   C    →      A   p
-           / \\                 / \\
-          A   B               B   C
-        """
         q = p.esq                  # q sobe
         p.esq = q.dir              # B migra para filho esquerdo de p
         q.dir = p                  # p desce como filho direito de q
@@ -82,32 +63,10 @@ class AVL:
         return q
 
     def _rot_dir_esq(self, p):
-        """Rotação dupla Direita-Esquerda (caso Direita-Esquerda).
-        Primeiro rotaciona o filho direito à direita, depois p à esquerda.
-
-              p                 p                  r
-             / \\              / \\               /   \\
-            A   q    →       A   r     →        p     q
-               / \\               \\            / \\   / \\
-              r   C               q           A   B2 B3  C
-             / \\                / \\
-            B2  B3             B3   C
-        """
         p.dir = self._rot_dir(p.dir)
         return self._rot_esq(p)
 
     def _rot_esq_dir(self, p):
-        """Rotação dupla Esquerda-Direita (caso Esquerda-Direita).
-        Primeiro rotaciona o filho esquerdo à esquerda, depois p à direita.
-
-              p                 p                  r
-             / \\              / \\               /   \\
-            q   C    →       r   C     →        q     p
-           / \\             / \\               / \\   / \\
-          A   r            q   B3            A  B2 B3   C
-             / \\          / \\
-            B2  B3        A   B2
-        """
         p.esq = self._rot_esq(p.esq)
         return self._rot_dir(p)
 
@@ -116,16 +75,6 @@ class AVL:
     # ------------------------------------------------------------------ #
 
     def _balancear(self, node):
-        """Verifica o FB do nó e aplica a rotação adequada (se necessário).
-        Retorna o ponteiro correto para o pai (pode ser um nó diferente
-        após rotação).
-
-        Casos:
-          FB = +2, FB(dir) ≥ 0  → rotação simples esquerda  (DD)
-          FB = +2, FB(dir) < 0  → rotação dupla  dir-esq    (DE)
-          FB = −2, FB(esq) ≤ 0  → rotação simples direita   (EE)
-          FB = −2, FB(esq) > 0  → rotação dupla  esq-dir    (ED)
-        """
         self._atualizar_altura(node)
         fb = self._fb(node)
 
