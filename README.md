@@ -12,7 +12,7 @@ Conteúdo da Disciplina: Árvores<br>
 
 
 ## Link do Vídeo 
-
+[Assistir ao vídeo](https://www.youtube.com/watch?v=zu6h1HWkD-Q)
 
 ## Sobre
 
@@ -34,7 +34,12 @@ alfabética, que degenera a BST numa lista encadeada).
 
 ## Screenshots
 
-<!-- A serem adicionados -->
+### Rotações AVL 
+![Screenshot 1](img/rotacoes.png)
+
+### Balanceamento AVL 
+![Screenshot 2](img/balancear.png)
+
 
 
 
@@ -104,10 +109,10 @@ Estrutura de arquivos:
 ```
 avl-contatos/
 ├── main.py        # ponto de entrada
-├── bst.py         # Pessoa 1 — BST simples
-├── avl.py         # Pessoa 1 — AVL com rotações
-├── interface.py   # Pessoa 2 — menu e visualização ASCII
-├── benchmark.py   # Pessoa 2 — cenários de comparação BST vs AVL
+├── bst.py         # BST simples
+├── avl.py         # AVL com rotações
+├── interface.py   # menu e visualização ASCII
+├── benchmark.py   # cenários de comparação BST vs AVL
 └── README.md
 ```
 
